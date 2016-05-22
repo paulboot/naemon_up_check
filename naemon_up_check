@@ -1,0 +1,17 @@
+#!/bin/bash
+
+EMAIL="x@gmail.com"
+ 
+NAGCHK="/usr/lib/nagios/plugins/check_nagios"
+PARAMS="-e 60 -F /var/log/naemon/naemon.log -C /usr/bin/naemon"
+ 
+INFO=`$NAGCHK $PARAMS`
+STATUS=$?
+ 
+case $STATUS in
+    0) echo "OK : " $INFO
+        ;;
+    *) echo "ERROR : " $INFO | \
+            /usr/bin/mailx -s "## Naemon on $(hostname -f) Down or Error ##" $EMAIL
+        ;;
+esac
