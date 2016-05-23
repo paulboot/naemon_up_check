@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EMAIL="xxx@gmail.com"
+EMAIL="xxxx@gmail.com"
  
 NAGCHK="/usr/lib/nagios/plugins/check_nagios"
 PARAMS="-e 60 -F /var/log/naemon/naemon.log -C /usr/bin/naemon"
