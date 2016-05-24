@@ -1,6 +1,14 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 EMAIL="7xxxx@gmail.com"
+=======
+#Add to crontab -e check every 5 minutes
+# m h  dom mon dow   command
+#*/5 * * * * /usr/local/bin/naemon_up_check >> /var/log/naemon/naemon_up_check.log 2>&1
+
+EMAIL="6xxxx@gmail.com"
+>>>>>>> ef9f6f737ef08b8547b9312da8bbe87b247a9457
  
 NAGCHK="/usr/lib/nagios/plugins/check_nagios"
 PARAMS="-e 60 -F /var/log/naemon/naemon.log -C /usr/bin/naemon"
