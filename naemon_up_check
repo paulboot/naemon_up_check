@@ -1,6 +1,8 @@
 #!/bin/bash
-
+#
+# Add push-over support using Notify by Pushover by by Jedda Wignall
 EMAIL="7xxxx@gmail.com"
+
 
 #Add to crontab -e check every 5 minutes
 # m h  dom mon dow   command
