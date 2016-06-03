@@ -1,23 +1,38 @@
 #!/bin/bash
 #
-# Add push-over support using Notify by Pushover by by Jedda Wignall
-EMAIL="7xxxx@gmail.com"
-
+# Took original mail only script from some Nagios book 
+# Push-over support using Notify by Pushover by Jedda Wignall
 
 #Add to crontab -e check every 5 minutes
 # m h  dom mon dow   command
 #*/5 * * * * /usr/local/bin/naemon_up_check >> /var/log/naemon/naemon_up_check.log 2>&1
 
-NAGCHK="/usr/lib/nagios/plugins/check_nagios"
-PARAMS="-e 60 -F /var/log/naemon/naemon.log -C /usr/bin/naemon"
+CONFIG='/usr/local/etc/naemon_up_check.conf'
+
+if [ -r $CONFIG ]; then
+        . $CONFIG
+else
+    echo "Error: file '$CONFIG' does not exist"
+    exit 5
+fi
+
  
-INFO=`$NAGCHK $PARAMS`
+INFO=`$NAEMONCHK $PARAMS`
 STATUS=$?
  
 case $STATUS in
-    0) echo "OK : " $INFO
+    0) echo "Ok   : " $INFO
         ;;
-    *) echo "ERROR : " $INFO | \
-            /usr/bin/mailx -s "## Naemon on $(hostname -f) Down or Error ##" $EMAIL
+    *) echo "Error: " $INFO | \
+            if [ "$NOTIFYMAIL_ENABLED" = "yes" ]; then
+                /usr/bin/mailx -s "Error:Naemon on $(hostname -f) Down." $NOTIFYEMAIL
+            fi
+            
+            if [ "$PUSHOVER_ENABLED" = "yes" ]; then
+                #/usr/local/bin/notify_by_pushover.sh -u "$_CONTACTPUSHOVER_USERKEY$" -a "$_CONTACTPUSHOVER_APPKEY$" \
+                #-c "siren" -w "spacealarm" -o "magic" -t "$SERVICEDESC$ on $HOSTNAME$ is $SERVICESTATE$" \
+                #-m "Status: $SERVICEOUTPUT$"
+            fi         
         ;;
 esac
+

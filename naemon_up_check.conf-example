@@ -1,0 +1,15 @@
+##Example naemon_up_check.conf 
+
+# Please modifty defaults
+
+NOTIFYMAIL_ENABLED=yes
+NOTIFYEMAIL=""
+
+PUSHOVER_ENABLED=yes
+PUSHOVER_USERKEY=""
+PUSHOVER_APPKEY=""
+PUSHOVER_DEVICE=""
+
+PUSHOVER="/usr/local/bin/notify_by_pushover.sh"
+NAEMONCHK="/usr/lib/nagios/plugins/check_nagios"
+PARAMS="-e 60 -F /var/log/naemon/naemon.log -C /usr/bin/naemon"
