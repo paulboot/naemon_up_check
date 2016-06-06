@@ -7,7 +7,7 @@
 # m h  dom mon dow   command
 #*/5 * * * * /usr/local/bin/naemon_up_check >> /var/log/naemon/naemon_up_check.log 2>&1
 
-CONFIG='/usr/local/etc/naemon_up_check.conf'
+CONFIG='./naemon_up_check.conf'
 
 if [ -r $CONFIG ]; then
         . $CONFIG
@@ -16,7 +16,6 @@ else
     exit 5
 fi
 
- 
 INFO=`$NAEMONCHK $PARAMS`
 STATUS=$?
  
@@ -29,9 +28,9 @@ case $STATUS in
             fi
             
             if [ "$PUSHOVER_ENABLED" = "yes" ]; then
-                #/usr/local/bin/notify_by_pushover.sh -u "$_CONTACTPUSHOVER_USERKEY$" -a "$_CONTACTPUSHOVER_APPKEY$" \
-                #-c "siren" -w "spacealarm" -o "magic" -t "$SERVICEDESC$ on $HOSTNAME$ is $SERVICESTATE$" \
-                #-m "Status: $SERVICEOUTPUT$"
+                /usr/local/bin/notify_by_pushover.sh -u "$PUSHOVER_USERKEY" -a "$PUSHOVER_APPKEY" \
+                -c "siren" -w "spacealarm" -o "magic" -t "CRITICAL: Naemon on $(hostname -f) down." \
+                -m "Naemon on $(hostname -f) is currently down."
             fi         
         ;;
 esac
