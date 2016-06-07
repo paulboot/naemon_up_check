@@ -8,11 +8,17 @@
 #*/5 * * * * /usr/local/bin/naemon_up_check >> /var/log/naemon/naemon_up_check.log 2>&1
 
 CONFIG="$HOME/.naemon_up_check.conf"
+CURL=$(which curl)
 
-if [ -r $CONFIG ]; then
+if [ -r "$CONFIG" ]; then
         . $CONFIG
 else
     echo "Error: file '$CONFIG' does not exist"
+    exit 5
+fi
+
+if [[ "$PUSHOVER_ENABLED" = "yes" && -z "$CURL" ]]; then
+    echo "ERROR: 'curl' not found: apt-get install curl"
     exit 5
 fi
 
@@ -20,18 +26,24 @@ INFO=`$NAEMONCHK $PARAMS`
 STATUS=$?
  
 case $STATUS in
-    0) echo "Ok   : " $INFO
+    0) 
+        echo "OK   : $INFO"
         ;;
-    *) echo "Error: " $INFO | \
-            if [ "$NOTIFYMAIL_ENABLED" = "yes" ]; then
-                /usr/bin/mailx -s "CRITICAL: Naemon on $(hostname -f) is down." $NOTIFYEMAIL
-            fi
-            
-            if [ "$PUSHOVER_ENABLED" = "yes" ]; then
-                /usr/local/bin/notify_by_pushover.sh -u "$PUSHOVER_USERKEY" -a "$PUSHOVER_APPKEY" \
-                -c "siren" -w "spacealarm" -o "magic" -t "CRITICAL: Naemon on $(hostname -f) is down." \
-                -m "Naemon on $(hostname -f) is currently down."
-            fi         
+    *)
+        MESSAGE="ERROR: $INFO"
+        if [ "$NOTIFYMAIL_ENABLED" = "yes" ]; then
+            echo $MESSAGE | /usr/bin/mailx -s "CRITICAL: Naemon on $(hostname -f) is down." $NOTIFYEMAIL
+        fi
+        
+        if [ "$PUSHOVER_ENABLED" = "yes" ]; then
+            curl -s -S -F "token=$PUSHOVER_APPKEY" \
+                -F "user=$PUSHOVER_USERKEY" \
+                -F "title=CRITICAL: Naemon on $(hostname -f) is down." \
+                -F "message=$MESSAGE" \
+                -F "sound=siren" \
+                -F "priority=0" \
+                https://api.pushover.net/1/messages
+        fi         
         ;;
 esac
 
