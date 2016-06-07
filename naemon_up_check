@@ -24,12 +24,12 @@ case $STATUS in
         ;;
     *) echo "Error: " $INFO | \
             if [ "$NOTIFYMAIL_ENABLED" = "yes" ]; then
-                /usr/bin/mailx -s "Error:Naemon on $(hostname -f) Down." $NOTIFYEMAIL
+                /usr/bin/mailx -s "CRITICAL: Naemon on $(hostname -f) is down." $NOTIFYEMAIL
             fi
             
             if [ "$PUSHOVER_ENABLED" = "yes" ]; then
                 /usr/local/bin/notify_by_pushover.sh -u "$PUSHOVER_USERKEY" -a "$PUSHOVER_APPKEY" \
-                -c "siren" -w "spacealarm" -o "magic" -t "CRITICAL: Naemon on $(hostname -f) down." \
+                -c "siren" -w "spacealarm" -o "magic" -t "CRITICAL: Naemon on $(hostname -f) is down." \
                 -m "Naemon on $(hostname -f) is currently down."
             fi         
         ;;
