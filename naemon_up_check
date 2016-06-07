@@ -7,7 +7,7 @@
 # m h  dom mon dow   command
 #*/5 * * * * /usr/local/bin/naemon_up_check >> /var/log/naemon/naemon_up_check.log 2>&1
 
-CONFIG='./naemon_up_check.conf'
+CONFIG="$HOME/.naemon_up_check.conf"
 
 if [ -r $CONFIG ]; then
         . $CONFIG
